@@ -18,3 +18,11 @@ await db.query(
     admin BOOLEAN
   )`
 );
+
+await db.query(
+  `CREATE TABLE sessions (
+    uuid TEXT PRIMARY KEY,
+    created_at DATETIME NOT NULL,
+    user_id INTEGER
+  )`
+);
