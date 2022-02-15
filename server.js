@@ -19,6 +19,7 @@ app
   .get("/indicators", getIndicators)
   .get("/countries/:country/info", getCountryInfo)
   .get("/countries/:country/:indicator/info", getCountryIndicatorInfo)
+  .get("/countries/:country/:indicator/:year/info", getCountryIndicatorYearInfo)
   .start({ port: PORT });
 console.log(`Server running on http://localhost:${PORT}`);
 
@@ -90,4 +91,29 @@ async function getCountryIndicatorInfo(server) {
     return `YEAR: ${country.Year} VALUE: ${country.Value}`;
   });
   return server.json(countryIndicatorInfo, 200);
+}
+
+async function getCountryIndicatorYearInfo(server) {
+  const { country, indicator, year } = await server.params;
+  const formattedCountry = formatParam(country);
+  const formattedIndicator = formatParam(indicator);
+  const query = `
+    SELECT * 
+    FROM Country JOIN Indicators 
+    ON Indicators.CountryName = Country.ShortName 
+    WHERE ShortName = ?
+    AND IndicatorName = ?
+    AND Year = ?
+  `;
+  const allCountryIndicatorYearInfo = [
+    ...(await db
+      .query(query, [formattedCountry, formattedIndicator, year])
+      .asObjects()),
+  ];
+  const countryIndicatorYearInfo = allCountryIndicatorYearInfo.map(
+    (country) => {
+      return `COUNTRY: ${country.ShortName}\nINDICATOR: ${country.IndicatorName}\nYEAR: ${country.Year}\nVALUE: ${country.Value}`;
+    }
+  );
+  return server.json(countryIndicatorYearInfo[0], 200);
 }
