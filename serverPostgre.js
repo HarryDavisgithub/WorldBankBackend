@@ -24,8 +24,16 @@ app
   .get("/countries", getCountries)
   .get("/indicators", getIndicators)
   .get("/countries/:country/info", getCountryInfo)
-  //   .get("/countries/:country/:indicator/info", getCountryIndicatorInfo)
-  //   .get("/countries/:country/:indicator/:year/info", getCountryIndicatorYearInfo)
+  .get("/countries/:country/:indicator/info", getCountryIndicatorInfo)
+  .get("/countries/:country/:indicator/:year/info", getCountryIndicatorYearInfo)
+  .get(
+    "/compare/:firstCountry/:secondCountry/:indicator/info",
+    getTwoCountriesIndicatorInfo
+  )
+  .get(
+    "/compare/:firstCountry/:secondCountry/:indicator/:year/info",
+    getTwoCountriesIndicatorYearInfo
+  )
   .post("/users", postSignup)
   .start({ port: PORT });
 console.log(`Server running on http://localhost:${PORT}`);
@@ -41,6 +49,10 @@ function allowCors() {
 function formatParam(param) {
   const formattedParam = param.replaceAll("%20", " ");
   return formattedParam;
+}
+
+function checkReturnedArrayLength(array) {
+  return array.length > 0 ? true : false;
 }
 
 async function getCountries(server) {
@@ -65,9 +77,10 @@ async function getCountryInfo(server) {
   const { country } = await server.params;
   const formattedCountry = formatParam(country);
   const query = `
-  SELECT * 
-  FROM Indicators 
-  WHERE countryName = $1`;
+    SELECT * 
+    FROM Indicators 
+    WHERE CountryName = $1
+  `;
   const allCountryInfo = (
     await db.queryObject({ text: query, args: [formattedCountry] })
   ).rows;
@@ -75,6 +88,109 @@ async function getCountryInfo(server) {
     return `INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
   });
   return server.json(countryIndicators, 200);
+}
+
+async function getCountryIndicatorInfo(server) {
+  const { country, indicator } = await server.params;
+  const formattedCountry = formatParam(country);
+  const formattedIndicator = formatParam(indicator);
+  const query = `
+    SELECT *
+    FROM Indicators
+    WHERE CountryName = $1
+    AND IndicatorName = $2
+  `;
+  const allCountryIndicatorInfo = (
+    await db.queryObject({
+      text: query,
+      args: [formattedCountry, formattedIndicator],
+    })
+  ).rows;
+  const countryIndicatorInfo = allCountryIndicatorInfo.map((country) => {
+    return `YEAR: ${country.year} VALUE: ${country.value}`;
+  });
+  return server.json(countryIndicatorInfo, 200);
+}
+
+async function getCountryIndicatorYearInfo(server) {
+  const { country, indicator, year } = await server.params;
+  const formattedCountry = formatParam(country);
+  const formattedIndicator = formatParam(indicator);
+  const query = `
+    SELECT * 
+    FROM Indicators  
+    WHERE CountryName = $1
+    AND IndicatorName = $2
+    AND Year = $3
+  `;
+  const allCountryIndicatorYearInfo = (
+    await db.queryObject({
+      text: query,
+      args: [formattedCountry, formattedIndicator, year],
+    })
+  ).rows;
+  const countryIndicatorYearInfo = allCountryIndicatorYearInfo.map(
+    (country) => {
+      return `COUNTRY: ${country.countryname} INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
+    }
+  );
+  return server.json(countryIndicatorYearInfo);
+}
+
+async function getTwoCountriesIndicatorInfo(server) {
+  const { firstCountry, secondCountry, indicator } = await server.params;
+  const formattedFirstCountry = formatParam(firstCountry);
+  const formattedSecondCountry = formatParam(secondCountry);
+  const formattedIndicator = formatParam(indicator);
+  const query = `
+    SELECT *
+    FROM Indicators
+    WHERE (CountryName = $1 OR CountryName = $2)
+    AND IndicatorName = $3
+  `;
+  const allTwoCountriesIndicatorInfo = (
+    await db.queryObject({
+      text: query,
+      args: [formattedFirstCountry, formattedSecondCountry, formattedIndicator],
+    })
+  ).rows;
+  const twoCountriesIndicatorInfo = allTwoCountriesIndicatorInfo.map(
+    (country) => {
+      return `COUNTRY: ${country.countryname} INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
+    }
+  );
+  return server.json(twoCountriesIndicatorInfo);
+}
+
+async function getTwoCountriesIndicatorYearInfo(server) {
+  const { firstCountry, secondCountry, indicator, year } = await server.params;
+  const formattedFirstCountry = formatParam(firstCountry);
+  const formattedSecondCountry = formatParam(secondCountry);
+  const formattedIndicator = formatParam(indicator);
+  const query = `
+    SELECT *
+    FROM Indicators 
+    WHERE (CountryName = $1 OR CountryName = $2)
+    AND IndicatorName = $3
+    AND Year = $4
+  `;
+  const allTwoCountriesIndicatorYearInfo = (
+    await db.queryObject({
+      text: query,
+      args: [
+        formattedFirstCountry,
+        formattedSecondCountry,
+        formattedIndicator,
+        year,
+      ],
+    })
+  ).rows;
+  const twoCountriesIndicatorYearInfo = allTwoCountriesIndicatorYearInfo.map(
+    (country) => {
+      return `COUNTRY: ${country.countryname} INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
+    }
+  );
+  return server.json(twoCountriesIndicatorYearInfo);
 }
 
 async function postSignup(server) {
