@@ -88,7 +88,11 @@ async function getCountryInfo(server) {
   ).rows;
   if (checkReturnedArrayLength(allCountryInfo)) {
     const countryIndicators = allCountryInfo.map((country) => {
-      return `INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
+      return {
+        Indicator: country.indicatorname,
+        Year: country.year,
+        Value: Number(country.value),
+      };
     });
     return server.json(countryIndicators, 200);
   } else {
@@ -114,7 +118,10 @@ async function getCountryIndicatorInfo(server) {
   ).rows;
   if (checkReturnedArrayLength(allCountryIndicatorInfo)) {
     const countryIndicatorInfo = allCountryIndicatorInfo.map((country) => {
-      return `YEAR: ${country.year} VALUE: ${country.value}`;
+      return {
+        Year: country.year,
+        Value: Number(country.value),
+      };
     });
     return server.json(countryIndicatorInfo, 200);
   } else {
@@ -142,7 +149,12 @@ async function getCountryIndicatorYearInfo(server) {
   if (checkReturnedArrayLength(allCountryIndicatorYearInfo)) {
     const countryIndicatorYearInfo = allCountryIndicatorYearInfo.map(
       (country) => {
-        return `COUNTRY: ${country.countryname} INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
+        return {
+          Country: country.countryname,
+          Indicator: country.indicatorname,
+          Year: country.year,
+          Value: Number(country.value),
+        };
       }
     );
     return server.json(countryIndicatorYearInfo);
@@ -170,7 +182,12 @@ async function getTwoCountriesIndicatorInfo(server) {
   ).rows;
   const twoCountriesIndicatorInfo = allTwoCountriesIndicatorInfo.map(
     (country) => {
-      return `COUNTRY: ${country.countryname} INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
+      return {
+        Country: country.countryname,
+        Indicator: country.indicatorname,
+        Year: country.year,
+        Value: Number(country.value),
+      };
     }
   );
   return server.json(twoCountriesIndicatorInfo);
@@ -201,7 +218,12 @@ async function getTwoCountriesIndicatorYearInfo(server) {
   ).rows;
   const twoCountriesIndicatorYearInfo = allTwoCountriesIndicatorYearInfo.map(
     (country) => {
-      return `COUNTRY: ${country.countryname} INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
+      return {
+        Country: country.countryname,
+        Indicator: country.indicatorname,
+        Year: country.year,
+        Value: country.value,
+      };
     }
   );
   return server.json(twoCountriesIndicatorYearInfo);
