@@ -84,10 +84,14 @@ async function getCountryInfo(server) {
   const allCountryInfo = (
     await db.queryObject({ text: query, args: [formattedCountry] })
   ).rows;
-  const countryIndicators = allCountryInfo.map((country) => {
-    return `INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
-  });
-  return server.json(countryIndicators, 200);
+  if (checkReturnedArrayLength(allCountryInfo)) {
+    const countryIndicators = allCountryInfo.map((country) => {
+      return `INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
+    });
+    return server.json(countryIndicators, 200);
+  } else {
+    return server.json({ response: "No information returned" });
+  }
 }
 
 async function getCountryIndicatorInfo(server) {
@@ -106,10 +110,14 @@ async function getCountryIndicatorInfo(server) {
       args: [formattedCountry, formattedIndicator],
     })
   ).rows;
-  const countryIndicatorInfo = allCountryIndicatorInfo.map((country) => {
-    return `YEAR: ${country.year} VALUE: ${country.value}`;
-  });
-  return server.json(countryIndicatorInfo, 200);
+  if (checkReturnedArrayLength(allCountryIndicatorInfo)) {
+    const countryIndicatorInfo = allCountryIndicatorInfo.map((country) => {
+      return `YEAR: ${country.year} VALUE: ${country.value}`;
+    });
+    return server.json(countryIndicatorInfo, 200);
+  } else {
+    return server.json({ response: "No information returned" });
+  }
 }
 
 async function getCountryIndicatorYearInfo(server) {
@@ -129,12 +137,16 @@ async function getCountryIndicatorYearInfo(server) {
       args: [formattedCountry, formattedIndicator, year],
     })
   ).rows;
-  const countryIndicatorYearInfo = allCountryIndicatorYearInfo.map(
-    (country) => {
-      return `COUNTRY: ${country.countryname} INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
-    }
-  );
-  return server.json(countryIndicatorYearInfo);
+  if (checkReturnedArrayLength(allCountryIndicatorYearInfo)) {
+    const countryIndicatorYearInfo = allCountryIndicatorYearInfo.map(
+      (country) => {
+        return `COUNTRY: ${country.countryname} INDICATOR: ${country.indicatorname} YEAR: ${country.year} VALUE: ${country.value}`;
+      }
+    );
+    return server.json(countryIndicatorYearInfo);
+  } else {
+    return server.json({ response: "No information returned" });
+  }
 }
 
 async function getTwoCountriesIndicatorInfo(server) {
