@@ -3,6 +3,7 @@ import { DB } from "https://deno.land/x/sqlite@v2.5.0/mod.ts";
 import { abcCors } from "https://deno.land/x/cors/mod.ts";
 import { Client } from "https://deno.land/x/postgres/mod.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt/mod.ts";
+import { v4 } from "https://deno.land/std/uuid/mod.ts";
 
 const app = new Application();
 const db = new Client(
@@ -35,6 +36,7 @@ app
     getTwoCountriesIndicatorYearInfo
   )
   .post("/users", postSignup)
+  .post("/sessions", postLogin)
   .start({ port: PORT });
 console.log(`Server running on http://localhost:${PORT}`);
 
@@ -252,4 +254,31 @@ async function postLogin(server) {
   } else {
     server.json({ success: false });
   }
+}
+
+async function makeSession(userID, server) {
+  const sessionID = v4.generate();
+  await usersDb.query(
+    `INSERT INTO sessions (uuid, user_id, created_at) VALUES (?, ?, datetime('now'))`,
+    [sessionID, userID]
+  );
+  const expiryDate = new Date();
+  expiryDate.setDate(expiryDate.getDate() + 1);
+  server.setCookie({
+    name: "sessionId",
+    value: sessionID,
+    expires: expiryDate,
+  });
+}
+
+async function getCurrentUser(sessionID) {
+  const user = [
+    ...usersDb
+      .query(
+        "SELECT users.* FROM users JOIN sessions ON id = user_id WHERE uuid = ?",
+        [sessionID]
+      )
+      .asObjects(),
+  ];
+  return user[0];
 }
