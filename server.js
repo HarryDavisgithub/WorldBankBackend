@@ -181,7 +181,9 @@ async function getTwoCountriesIndicatorYearInfo(server) {
     AND IndicatorName = ?
     AND Year = ?
   `;
-  const AllTwoCountriesIndicatorYearInfo = [
+
+  const allTwoCountriesIndicatorYearInfo = [
+
     ...(await db
       .query(query, [
         formattedFirstCountry,
@@ -191,12 +193,16 @@ async function getTwoCountriesIndicatorYearInfo(server) {
       ])
       .asObjects()),
   ];
-  const twoCountriesIndicatorInfo = AllTwoCountriesIndicatorYearInfo.map(
+
+  const twoCountriesIndicatorYearInfo = allTwoCountriesIndicatorYearInfo.map(
+
     (country) => {
       return `COUNTRY: ${country.CountryName} INDICATOR: ${country.IndicatorName} YEAR: ${country.Year} VALUE: ${country.Value}`;
     }
   );
-  return server.json(twoCountriesIndicatorInfo, 200);
+
+  return server.json(twoCountriesIndicatorYearInfo, 200);
+
 }
 
 // Test indicator: Access to electricity (% of population)
