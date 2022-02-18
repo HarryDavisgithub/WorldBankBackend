@@ -105,4 +105,14 @@ Deno.test("%20 are removed correctly", async () => {
   assertEquals(formatted, " hell o  wo rld");
 });
 
+Deno.test("Country list contains all countries", async () => {
+  const countryList = await network.getCountries();
+  assertEquals(countryList.length, 247);
+});
+
+Deno.test("Indicator list contains all indicators", async () => {
+  const indicatorList = await network.getIndicators();
+  assertEquals(indicatorList.length, 1344);
+});
+
 //run using deno test server.test.js --allow-net --allow-read --allow-write
