@@ -44,6 +44,6 @@ Post an email and password to this endpoint in order to login to an existing acc
 
 ## Team Delta:
 
-Project manager: Engineer Oliver Case-Green
-Systems architect: Harry Davis
-Quality assurance: Tamoor Waheed
+Project manager: Engineer Oliver Case-Green<br>
+Systems architect: Harry Davis<br>
+Quality assurance: Tamoor Waheed<br>
