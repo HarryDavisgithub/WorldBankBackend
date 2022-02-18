@@ -15,14 +15,14 @@ await db.query(
     encrypted_password TEXT NOT NULL,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL,
-    admin BOOLEAN
+    admin BOOLEAN NOT NULL
   )`
 );
 
 await db.query(
   `CREATE TABLE sessions (
-    uuid TEXT PRIMARY KEY,
+    uuid TEXT PRIMARY KEY NOT NULL,
     created_at DATETIME NOT NULL,
-    user_id INTEGER
+    user_id INTEGER NOT NULL
   )`
 );

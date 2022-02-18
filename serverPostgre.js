@@ -48,7 +48,7 @@ function allowCors() {
   });
 }
 
-function formatParam(param) {
+export function formatParam(param) {
   const formattedParam = param.replaceAll("%20", " ");
   return formattedParam;
 }
@@ -253,7 +253,7 @@ async function postSignup(server) {
   server.json({ success: true }, 200);
 }
 
-function validateEmail(mail) {
+export function validateEmail(mail) {
   if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
     return true;
   }
